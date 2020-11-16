@@ -1,0 +1,26 @@
+<section>
+  <form fxLayout="column" fxLayout="column" fxLayoutAlign="space-between center center" fxLayoutGap="5px" #f="ngForm"
+    (ngSubmit)="onSubmit(f)">
+    <mat-form-field>
+      <mat-label>Email</mat-label>
+      <input type="email" matInput placeholder="Email" value="" ngModel name="email" email required
+        #emailInput="ngModel">
+      <mat-error *ngIf="emailInput.hasError('required')">Email should not be empty</mat-error>
+      <mat-error *ngIf="!emailInput.hasError('required')">Email is invalid.
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field hintLabel="The length should be at least 8 character long.">
+      <mat-label>Password</mat-label>
+      <input type="password" matInput placeholder="Password" value="" ngModel name="password" required minlength="8"
+        #pass="ngModel">
+      <mat-hint align="end"> {{pass.value?.length}}/8 </mat-hint>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput [matDatepicker]="picker" [max]="maxDate" ngModel name="birthdate" required>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    <mat-checkbox ngModel name="agree" color="primary" required>Agree with Term and Conditions.</mat-checkbox>
+    <button type="submit" mat-raised-button color="primary" [disabled]="f.invalid">Submit</button>
+  </form>
+</section>
