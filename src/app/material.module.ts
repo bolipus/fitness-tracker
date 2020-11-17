@@ -12,6 +12,9 @@ import { MatListModule } from '@angular/material/list';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
+import { MatDialogModule } from '@angular/material/dialog';
 
 import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 //import { MatMomentDateModule} from '@angular/material-moment-adapter';
@@ -31,7 +34,9 @@ import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
     MatListModule,
     MatTabsModule,
     MatCardModule,
-    MatSelectModule
+    MatSelectModule,
+    MatProgressSpinnerModule,
+    MatDialogModule
   ],
   imports: [
     MatButtonModule,
@@ -45,7 +50,9 @@ import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
     MatListModule,
     MatTabsModule,
     MatCardModule,
-    MatSelectModule
+    MatSelectModule,
+    MatProgressSpinnerModule,
+    MatDialogModule
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'sl-SI' },

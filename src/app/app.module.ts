@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { FlexLayoutModule } from '@angular/flex-layout';
 
@@ -18,6 +18,8 @@ import { PastTrainingsComponent } from './training/past-trainings/past-trainings
 import { WelcomeComponent } from './welcome/welcome.component';
 import { HeaderComponent } from './navigation/header/header.component';
 import { SidenavListComponent } from './navigation/sidenav-list/sidenav-list.component';
+import { StopTrainingDialogComponent } from './training/current-training/stop-training-dialog/stop-training-dialog.component';
+import { AuthService } from './auth/auth.service';
 
 @NgModule({
   declarations: [
@@ -30,7 +32,8 @@ import { SidenavListComponent } from './navigation/sidenav-list/sidenav-list.com
     PastTrainingsComponent,
     WelcomeComponent,
     HeaderComponent,
-    SidenavListComponent
+    SidenavListComponent,
+    StopTrainingDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -38,10 +41,11 @@ import { SidenavListComponent } from './navigation/sidenav-list/sidenav-list.com
     BrowserAnimationsModule,
     MaterialModule,
     FlexLayoutModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [
-
+    AuthService
   ],
   bootstrap: [AppComponent]
 })

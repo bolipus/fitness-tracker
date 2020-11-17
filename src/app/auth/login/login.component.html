@@ -1,1 +1,14 @@
-<p>login works!</p>
+<section class="login">
+  <form [formGroup]="loginForm" fxLayout="column" fxLayout="column" fxLayoutAlign="space-between center center"
+    fxLayoutGap="5px" (ngSubmit)="onLogin()">
+    <mat-form-field>
+      <mat-label>Email</mat-label>
+      <input type="email" matInput placeholder="Email" value="" formControlName="email" email required>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Password</mat-label>
+      <input type="password" matInput placeholder="Password" value="" formControlName="password" required>
+    </mat-form-field>
+    <button type="submit" mat-raised-button color="primary">Login</button>
+  </form>
+</section>
