@@ -11,8 +11,8 @@
     <mat-icon color="primary">fitness_center</mat-icon>
     <span class="side-caption">Training</span>
   </a>
-  <a mat-list-item (click)="onCloseSideNav()" *ngIf="isAuth">
-    <button mat-icon-button (click)="logout()">
+  <a mat-list-item (click)="logout()" *ngIf="isAuth">
+    <button mat-icon-button>
       <mat-icon color="primary">logout</mat-icon>
       <span class="side-caption">Logout</span>
     </button>

@@ -20,7 +20,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(private authService: AuthService) {
     this.authSubscription = this.authService.authChange.subscribe((authStatus) => {
       this.isAuth = authStatus;
-    })
+    });
+    console.log('authSubscription:' + this.authSubscription);
   }
 
 

@@ -1,5 +1,5 @@
 <section fxLayout="column" fxLayoutAlign="center center" class="currentTraining">
-
+  <h1>{{selectedExcercise?.name}}</h1>
   <mat-progress-spinner mode="determinate" [value]="progress"> </mat-progress-spinner>
   <h1>{{progress}}%</h1>
   <button type="submit" mat-raised-button color="primary" (click)="onStopTimer()">Stop</button>
