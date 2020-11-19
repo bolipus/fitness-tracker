@@ -8,15 +8,17 @@ import { Subject } from 'rxjs';
 export class TrainingService {
 
   private availableExcercises: Excercise[] = [
-    { id: 'crounhes', name: 'Crounces', duration: 2, calories: 8 },
-    { id: 'running', name: 'Running', duration: 5, calories: 200 },
-    { id: 'walking', name: 'Walking', duration: 10, calories: 50 },
-    { id: 'swimming', name: 'Swimming', duration: 15, calories: 150 }
+    { id: 'crounhes', name: 'Crounces', duration: 40, calories: 8 },
+    { id: 'running', name: 'Running', duration: 20, calories: 200 },
+    { id: 'walking', name: 'Walking', duration: 50, calories: 50 },
+    { id: 'swimming', name: 'Swimming', duration: 80, calories: 150 }
   ];
 
   excerciseChanged = new Subject<Excercise | undefined>();
 
   private runningExcercise: Excercise | undefined;
+
+  private excercises: Excercise[] = [];
 
   constructor() {
 
@@ -40,11 +42,42 @@ export class TrainingService {
     }
   }
 
+  completeExcercise(): void {
+    if (this.runningExcercise !== undefined) {
+      this.excercises.push({
+        ...this.runningExcercise,
+        date: new Date(),
+        state: 'completed'
+      });
+      this.runningExcercise = undefined;
+      this.excerciseChanged.next(undefined);
+    }
+
+  }
+
+  cancelExcercise(progress: number): void {
+    if (this.runningExcercise !== undefined) {
+      this.excercises.push({
+        ...this.runningExcercise,
+        calories: this.runningExcercise.calories * (progress / 100),
+        duration: this.runningExcercise.duration * (progress / 100),
+        date: new Date(),
+        state: 'cancelled'
+      });
+      this.runningExcercise = undefined;
+      this.excerciseChanged.next();
+    }
+  }
+
   getRunningExcercise(): Excercise | undefined {
     if (this.runningExcercise !== undefined) {
       return { ...this.runningExcercise };
     } else {
       return undefined;
     }
+  }
+
+  getExcercises(): Excercise[] {
+    return this.excercises;
   }
 }

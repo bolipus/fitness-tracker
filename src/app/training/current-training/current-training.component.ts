@@ -11,9 +11,6 @@ import { Excercise } from '../excercise.model';
 })
 export class CurrentTrainingComponent implements OnInit {
 
-  @Output()
-  trainingExit = new EventEmitter<any>();
-
   selectedExcercise: Excercise | undefined;
 
   interval: any;
@@ -40,6 +37,7 @@ export class CurrentTrainingComponent implements OnInit {
       this.progress += 10;
       if (this.progress >= 100) {
         this.progress = 100;
+        this.trainingService.completeExcercise();
         clearInterval(this.interval);
       }
     }, step);
@@ -53,7 +51,7 @@ export class CurrentTrainingComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       clearInterval(this.interval);
       if (result) {
-        this.trainingExit.emit();
+        this.trainingService.cancelExcercise(this.progress);
       } else {
         this.startAndResumeTimer();
       }

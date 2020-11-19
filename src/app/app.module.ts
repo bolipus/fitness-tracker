@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -20,6 +20,11 @@ import { HeaderComponent } from './navigation/header/header.component';
 import { SidenavListComponent } from './navigation/sidenav-list/sidenav-list.component';
 import { StopTrainingDialogComponent } from './training/current-training/stop-training-dialog/stop-training-dialog.component';
 import { AuthService } from './auth/auth.service';
+
+import localeSi from '@angular/common/locales/sl';
+import { registerLocaleData } from '@angular/common';
+registerLocaleData(localeSi);
+
 
 @NgModule({
   declarations: [
@@ -45,7 +50,7 @@ import { AuthService } from './auth/auth.service';
     ReactiveFormsModule
   ],
   providers: [
-
+    { provide: LOCALE_ID, useValue: 'sl' },
   ],
   bootstrap: [AppComponent]
 })
