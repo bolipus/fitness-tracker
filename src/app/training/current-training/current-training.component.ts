@@ -21,6 +21,7 @@ export class CurrentTrainingComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
   }
 
   startAndResumeTimer(): void {

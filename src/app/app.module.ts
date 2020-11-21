@@ -19,10 +19,16 @@ import { WelcomeComponent } from './welcome/welcome.component';
 import { HeaderComponent } from './navigation/header/header.component';
 import { SidenavListComponent } from './navigation/sidenav-list/sidenav-list.component';
 import { StopTrainingDialogComponent } from './training/current-training/stop-training-dialog/stop-training-dialog.component';
-import { AuthService } from './auth/auth.service';
+
+
+import { AngularFireModule } from '@angular/fire'
+import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { AngularFireAuthModule } from '@angular/fire/auth';
+
 
 import localeSi from '@angular/common/locales/sl';
 import { registerLocaleData } from '@angular/common';
+import { environment } from '../environments/environment';
 registerLocaleData(localeSi);
 
 
@@ -47,7 +53,10 @@ registerLocaleData(localeSi);
     MaterialModule,
     FlexLayoutModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    AngularFireModule.initializeApp(environment.firebaseConfig, 'FitnessTracker'),
+    AngularFirestoreModule,
+    AngularFireAuthModule
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'sl' },

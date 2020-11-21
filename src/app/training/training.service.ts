@@ -1,37 +1,61 @@
 import { Injectable } from '@angular/core';
 import { Excercise } from './excercise.model';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Timestamp } from '@firebase/firestore-types';
+
+import { AngularFirestore } from '@angular/fire/firestore';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class TrainingService {
 
-  private availableExcercises: Excercise[] = [
-    { id: 'crounhes', name: 'Crounces', duration: 40, calories: 8 },
-    { id: 'running', name: 'Running', duration: 20, calories: 200 },
-    { id: 'walking', name: 'Walking', duration: 50, calories: 50 },
-    { id: 'swimming', name: 'Swimming', duration: 80, calories: 150 }
-  ];
+  private availableExcercises: Excercise[] = [];
 
   excerciseChanged = new Subject<Excercise | undefined>();
+  avalExcercisesChanged = new Subject<Excercise[]>();
+  excercisesChanged = new Subject<Excercise[]>();
 
   private runningExcercise: Excercise | undefined;
 
   private excercises: Excercise[] = [];
 
-  constructor() {
+  private subscriptions: Subscription[] = [];
+
+  constructor(private firestore: AngularFirestore) {
 
   }
 
+  fetchAvailableExcercises(): void {
+    const fetchSubcription = this.firestore
+      .collection<Excercise>('availableExcercises')
+      .snapshotChanges()
+      .pipe(
+        map(exArray => {
+          return exArray.map(ex => {
+            return {
+              ...ex.payload.doc.data(),
+              id: ex.payload.doc.id,
+            } as Excercise;
+          }
+          );
+        }
+        )
+      ).subscribe(
+        (excercises: Excercise[]) => {
+          this.availableExcercises = excercises;
+          console.log(this.availableExcercises);
+          this.avalExcercisesChanged.next(this.availableExcercises.slice());
+        }
 
-
-  getAvailableExcercises(): Excercise[] {
-    return this.availableExcercises.slice();
+      );
+    this.subscriptions.push(fetchSubcription);
   }
 
   startExcercise(selectedExcerciseId: string | undefined): void {
-    console.log('selectedExcerciseId:' + selectedExcerciseId);
+
     if (selectedExcerciseId !== undefined) {
       this.runningExcercise = this.availableExcercises.find(ex => ex.id === selectedExcerciseId);
       if (this.runningExcercise !== undefined) {
@@ -44,20 +68,20 @@ export class TrainingService {
 
   completeExcercise(): void {
     if (this.runningExcercise !== undefined) {
-      this.excercises.push({
+      this.addDataToDatabase({
         ...this.runningExcercise,
         date: new Date(),
         state: 'completed'
       });
       this.runningExcercise = undefined;
-      this.excerciseChanged.next(undefined);
+      this.excerciseChanged.next();
     }
 
   }
 
   cancelExcercise(progress: number): void {
     if (this.runningExcercise !== undefined) {
-      this.excercises.push({
+      this.addDataToDatabase({
         ...this.runningExcercise,
         calories: this.runningExcercise.calories * (progress / 100),
         duration: this.runningExcercise.duration * (progress / 100),
@@ -69,6 +93,10 @@ export class TrainingService {
     }
   }
 
+  private addDataToDatabase(excercise: Excercise) {
+    this.firestore.collection('excercies').add(excercise);
+  }
+
   getRunningExcercise(): Excercise | undefined {
     if (this.runningExcercise !== undefined) {
       return { ...this.runningExcercise };
@@ -77,7 +105,32 @@ export class TrainingService {
     }
   }
 
-  getExcercises(): Excercise[] {
-    return this.excercises;
+  fetchExcercises(): void {
+    const excerciseSubscription = this.firestore
+      .collection<Excercise>('excercies')
+      .snapshotChanges()
+      .pipe(
+        map(exArray => {
+          return exArray.map(ex => {
+            return {
+              ...ex.payload.doc.data(),
+              id: ex.payload.doc.id,
+              date: (ex.payload.doc.data().date as any as Timestamp).toDate()
+            } as Excercise;
+          }
+          );
+        }
+        )
+      ).subscribe(
+        (excercises: Excercise[]) => {
+          this.excercises = excercises;
+          this.excercisesChanged.next(this.excercises.slice());
+        }
+      );
+    this.subscriptions.push(excerciseSubscription);
+  }
+
+  cancelSubcriptions(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 }
