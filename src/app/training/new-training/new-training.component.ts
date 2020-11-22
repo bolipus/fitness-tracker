@@ -2,6 +2,7 @@ import { Component, OnInit, EventEmitter, Output, OnDestroy } from '@angular/cor
 import { TrainingService } from '../training.service';
 import { Excercise } from '../excercise.model';
 import { Observable, Subscription } from 'rxjs';
+import { UiService } from '../../shared/ui.service';
 
 @Component({
   selector: 'app-new-training',
@@ -16,7 +17,11 @@ export class NewTrainingComponent implements OnInit, OnDestroy {
 
   excercisesSubcription: Subscription | null = null;
 
-  constructor(private trainingService: TrainingService) {
+  loadingSubcription: Subscription | null = null;
+
+  isLoading = true;
+
+  constructor(private trainingService: TrainingService, private uiService: UiService) {
 
   }
 
@@ -26,14 +31,23 @@ export class NewTrainingComponent implements OnInit, OnDestroy {
       this.excercises = excercises;
     });
 
+    this.loadingSubcription = this.uiService.loadingStateChanged.subscribe(
+      (isLoading) => this.isLoading = isLoading
+    );
+
     this.trainingService.fetchAvailableExcercises();
   }
 
   ngOnDestroy(): void {
     this.excercisesSubcription?.unsubscribe();
+    this.loadingSubcription?.unsubscribe();
   }
 
   onStartTraining(): void {
     this.trainingService.startExcercise(this.selectedExcerciseId);
+  }
+
+  fetchAvailableExcercies(): void {
+    this.trainingService.fetchAvailableExcercises();
   }
 }

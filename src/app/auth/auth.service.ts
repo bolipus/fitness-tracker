@@ -7,6 +7,8 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { TrainingService } from '../training/training.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { UiService } from '../shared/ui.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +19,11 @@ export class AuthService {
 
   private isAuthenticated = false;
 
-  constructor(private router: Router, private angularFireAuth: AngularFireAuth, private trainingService: TrainingService) { }
+  constructor(
+    private router: Router,
+    private angularFireAuth: AngularFireAuth,
+    private trainingService: TrainingService,
+    private uiService: UiService) { }
 
 
   authListenerSubscription: Subscription | null = null;
@@ -43,11 +49,18 @@ export class AuthService {
   }
 
   registerUser(authData: AuthData): void {
-
+    this.uiService.loadingStateChanged.next(true);
     console.log('registerUser');
     this.angularFireAuth.createUserWithEmailAndPassword(authData.email, authData.password).then(
-      (result) => console.log(result)
-    ).catch(error => console.log(error));
+      (result) => {
+        console.log(result);
+        this.uiService.loadingStateChanged.next(false);
+      }
+    ).catch(error => {
+      this.uiService.showSnackbar(error, undefined, 1000);
+      this.uiService.loadingStateChanged.next(false);
+      console.log(error);
+    });
 
     this.authChange.next(true);
     this.router.navigate(['/training']);
@@ -55,11 +68,17 @@ export class AuthService {
 
   login(authData: AuthData): void {
     console.log('login');
+    this.uiService.loadingStateChanged.next(true);
     this.angularFireAuth.signInWithEmailAndPassword(authData.email, authData.password).then(
       (result => {
         console.log(result);
+        this.uiService.loadingStateChanged.next(false);
       })
-    ).catch(error => console.log(error));
+    ).catch(error => {
+      this.uiService.showSnackbar(error, undefined, 1000);
+      this.uiService.loadingStateChanged.next(false);
+      console.log(error);
+    });
 
 
   }
@@ -69,7 +88,10 @@ export class AuthService {
       (result) => {
         console.log('logout');
       }
-    ).catch(error => console.log(error));
+    ).catch(error => {
+      this.uiService.showSnackbar(error, undefined, 1000);
+      console.log(error);
+    });
 
   }
 

@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { Timestamp } from '@firebase/firestore-types';
 
 import { AngularFirestore } from '@angular/fire/firestore';
+import { UiService } from '../shared/ui.service';
 
 
 @Injectable({
@@ -24,11 +25,12 @@ export class TrainingService {
 
   private subscriptions: Subscription[] = [];
 
-  constructor(private firestore: AngularFirestore) {
+  constructor(private firestore: AngularFirestore, private uiService: UiService) {
 
   }
 
   fetchAvailableExcercises(): void {
+    this.uiService.loadingStateChanged.next(true);
     const fetchSubcription = this.firestore
       .collection<Excercise>('availableExcercises')
       .snapshotChanges()
@@ -45,9 +47,15 @@ export class TrainingService {
         )
       ).subscribe(
         (excercises: Excercise[]) => {
+          this.uiService.loadingStateChanged.next(false);
           this.availableExcercises = excercises;
           console.log(this.availableExcercises);
           this.avalExcercisesChanged.next(this.availableExcercises.slice());
+        },
+        (error) => {
+          this.uiService.loadingStateChanged.next(false);
+          this.uiService.showSnackbar('Fetching available excercises failed, please try again,', undefined, 1000);
+          this.avalExcercisesChanged.next();
         }
 
       );
@@ -125,7 +133,12 @@ export class TrainingService {
         (excercises: Excercise[]) => {
           this.excercises = excercises;
           this.excercisesChanged.next(this.excercises.slice());
+        },
+        (error) => {
+          this.uiService.loadingStateChanged.next(false);
+          this.uiService.showSnackbar('Fetching excercises failed, please try again', undefined, 1000);
         }
+
       );
     this.subscriptions.push(excerciseSubscription);
   }
