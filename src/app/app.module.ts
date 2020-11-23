@@ -12,6 +12,7 @@ import { AngularFireModule } from '@angular/fire'
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 
 
+import { StoreModule } from '@ngrx/store';
 
 import localeSi from '@angular/common/locales/sl';
 import { registerLocaleData } from '@angular/common';
@@ -19,6 +20,7 @@ import { environment } from '../environments/environment';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { AuthModule } from './auth/auth.module';
 import { SharedModule } from './shared/shared.module';
+import { appReducer } from './app.reducer';
 registerLocaleData(localeSi);
 
 
@@ -36,7 +38,8 @@ registerLocaleData(localeSi);
     BrowserAnimationsModule,
     AngularFireModule.initializeApp(environment.firebaseConfig, 'FitnessTracker'),
     AngularFirestoreModule,
-    AuthModule
+    AuthModule,
+    StoreModule.provideStore({ ui: appReducer })
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'sl' },
