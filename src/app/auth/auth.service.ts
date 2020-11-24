@@ -1,14 +1,15 @@
 import { Subject, Subscription } from 'rxjs';
 
-
-import { User } from './user.model';
 import { AuthData } from './auth-data.model';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { TrainingService } from '../training/training.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { UiService } from '../shared/ui.service';
+import { Store } from '@ngrx/store';
+import { AppState } from '../app.reducer';
+import { startLoading, stopLoading } from '../shared/ui.actions';
+
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,8 @@ export class AuthService {
     private router: Router,
     private angularFireAuth: AngularFireAuth,
     private trainingService: TrainingService,
-    private uiService: UiService) { }
+    private uiService: UiService,
+    private store: Store<AppState>) { }
 
 
   authListenerSubscription: Subscription | null = null;
@@ -49,7 +51,8 @@ export class AuthService {
   }
 
   registerUser(authData: AuthData): void {
-    this.uiService.loadingStateChanged.next(true);
+    // this.uiService.loadingStateChanged.next(true);
+    this.store.dispatch(startLoading());
     console.log('registerUser');
     this.angularFireAuth.createUserWithEmailAndPassword(authData.email, authData.password).then(
       (result) => {
@@ -58,7 +61,7 @@ export class AuthService {
       }
     ).catch(error => {
       this.uiService.showSnackbar(error, undefined, 1000);
-      this.uiService.loadingStateChanged.next(false);
+      this.store.dispatch(stopLoading());
       console.log(error);
     });
 
@@ -68,15 +71,15 @@ export class AuthService {
 
   login(authData: AuthData): void {
     console.log('login');
-    this.uiService.loadingStateChanged.next(true);
+    this.store.dispatch(startLoading());
     this.angularFireAuth.signInWithEmailAndPassword(authData.email, authData.password).then(
       (result => {
         console.log(result);
-        this.uiService.loadingStateChanged.next(false);
+        this.store.dispatch(stopLoading());
       })
     ).catch(error => {
       this.uiService.showSnackbar(error, undefined, 1000);
-      this.uiService.loadingStateChanged.next(false);
+      this.store.dispatch(stopLoading());
       console.log(error);
     });
 

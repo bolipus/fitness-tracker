@@ -20,7 +20,7 @@ import { environment } from '../environments/environment';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { AuthModule } from './auth/auth.module';
 import { SharedModule } from './shared/shared.module';
-import { appReducer } from './app.reducer';
+import { reducers } from './app.reducer';
 registerLocaleData(localeSi);
 
 
@@ -39,7 +39,7 @@ registerLocaleData(localeSi);
     AngularFireModule.initializeApp(environment.firebaseConfig, 'FitnessTracker'),
     AngularFirestoreModule,
     AuthModule,
-    StoreModule.provideStore({ ui: appReducer })
+    StoreModule.forRoot(reducers)
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'sl' },

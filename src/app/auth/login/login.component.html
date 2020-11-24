@@ -9,7 +9,7 @@
       <mat-label>Password</mat-label>
       <input type="password" matInput placeholder="Password" value="" formControlName="password" required>
     </mat-form-field>
-    <button type="submit" mat-raised-button color="primary" *ngIf="!loading">Login</button>
-    <mat-spinner *ngIf="loading"></mat-spinner>
+    <button type="submit" mat-raised-button color="primary" *ngIf="!(loading$ | async)">Login</button>
+    <mat-spinner *ngIf="loading$ | async"></mat-spinner>
   </form>
 </section>
