@@ -7,6 +7,9 @@ import { PastTrainingsComponent } from './past-trainings/past-trainings.componen
 import { SharedModule } from '../shared/shared.module';
 import { StopTrainingDialogComponent } from './current-training/stop-training-dialog/stop-training-dialog.component';
 import { TrainingRoutingModule } from './training-routing.module';
+import { StoreModule } from '@ngrx/store';
+import { reducers } from '../app.reducer';
+import { trainingReducer } from './training.reducer';
 
 
 
@@ -20,7 +23,8 @@ import { TrainingRoutingModule } from './training-routing.module';
   ],
   imports: [
     SharedModule,
-    TrainingRoutingModule
+    TrainingRoutingModule,
+    StoreModule.forFeature('training', trainingReducer)
   ]
 })
 export class TrainingModule { }

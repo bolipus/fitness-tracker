@@ -17,8 +17,3 @@ export const uiReducer: ActionReducer<UiState, TypedAction<string>> = createRedu
 )
 
 export const getIsLoading = (state: UiState) => state.isLoading;
-
-/*
-export function uiReducer(state: LoadingState, action: TypedAction<string>): any {
-  return _uiReducer(state, action);
-}*/

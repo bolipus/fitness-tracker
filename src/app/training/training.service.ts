@@ -6,6 +6,9 @@ import { Timestamp } from '@firebase/firestore-types';
 
 import { AngularFirestore } from '@angular/fire/firestore';
 import { UiService } from '../shared/ui.service';
+import { Store } from '@ngrx/store';
+import { AppState } from './training.reducer';
+import { fetchAvailableTrainingsAction, fetchFinishedTrainingsAction, stopTraining } from './training.actions';
 
 
 @Injectable({
@@ -25,7 +28,7 @@ export class TrainingService {
 
   private subscriptions: Subscription[] = [];
 
-  constructor(private firestore: AngularFirestore, private uiService: UiService) {
+  constructor(private firestore: AngularFirestore, private uiService: UiService, private store: Store<AppState>) {
 
   }
 
@@ -47,10 +50,7 @@ export class TrainingService {
         )
       ).subscribe(
         (excercises: Excercise[]) => {
-          this.uiService.loadingStateChanged.next(false);
-          this.availableExcercises = excercises;
-          console.log(this.availableExcercises);
-          this.avalExcercisesChanged.next(this.availableExcercises.slice());
+          this.store.dispatch(fetchAvailableTrainingsAction({ excercises }));
         },
         (error) => {
           this.uiService.loadingStateChanged.next(false);
@@ -81,8 +81,9 @@ export class TrainingService {
         date: new Date(),
         state: 'completed'
       });
-      this.runningExcercise = undefined;
-      this.excerciseChanged.next();
+      // this.runningExcercise = undefined;
+      this.store.dispatch(stopTraining());
+      //this.excerciseChanged.next();
     }
 
   }
@@ -96,8 +97,9 @@ export class TrainingService {
         date: new Date(),
         state: 'cancelled'
       });
-      this.runningExcercise = undefined;
-      this.excerciseChanged.next();
+      //this.runningExcercise = undefined;
+      this.store.dispatch(stopTraining());
+      //this.excerciseChanged.next();
     }
   }
 
@@ -115,7 +117,7 @@ export class TrainingService {
 
   fetchExcercises(): void {
     const excerciseSubscription = this.firestore
-      .collection<Excercise>('excercies')
+      .collection<Excercise>('excercies', ref => ref.orderBy('date', 'desc'))
       .snapshotChanges()
       .pipe(
         map(exArray => {
@@ -131,8 +133,7 @@ export class TrainingService {
         )
       ).subscribe(
         (excercises: Excercise[]) => {
-          this.excercises = excercises;
-          this.excercisesChanged.next(this.excercises.slice());
+          this.store.dispatch(fetchFinishedTrainingsAction({ excercises }));
         },
         (error) => {
           this.uiService.loadingStateChanged.next(false);

@@ -9,6 +9,7 @@ import { UiService } from '../shared/ui.service';
 import { Store } from '@ngrx/store';
 import { AppState } from '../app.reducer';
 import { startLoading, stopLoading } from '../shared/ui.actions';
+import { loginAction, logoutAction } from './auth.actions';
 
 
 @Injectable({
@@ -16,9 +17,6 @@ import { startLoading, stopLoading } from '../shared/ui.actions';
 })
 export class AuthService {
 
-  authChange = new Subject<boolean>();
-
-  private isAuthenticated = false;
 
   constructor(
     private router: Router,
@@ -30,17 +28,14 @@ export class AuthService {
 
   authListenerSubscription: Subscription | null = null;
 
-
   initAuthListener(): void {
     this.authListenerSubscription = this.angularFireAuth.authState.subscribe(user => {
       if (user) {
-        this.isAuthenticated = true;
-        this.authChange.next(true);
+        this.store.dispatch(loginAction());
         this.router.navigate(['/training']);
       } else {
         this.trainingService.cancelSubcriptions();
-        this.isAuthenticated = false;
-        this.authChange.next(false);
+        this.store.dispatch(logoutAction());
         this.router.navigate(['/login']);
       }
     });
@@ -51,7 +46,6 @@ export class AuthService {
   }
 
   registerUser(authData: AuthData): void {
-    // this.uiService.loadingStateChanged.next(true);
     this.store.dispatch(startLoading());
     console.log('registerUser');
     this.angularFireAuth.createUserWithEmailAndPassword(authData.email, authData.password).then(
@@ -65,7 +59,6 @@ export class AuthService {
       console.log(error);
     });
 
-    this.authChange.next(true);
     this.router.navigate(['/training']);
   }
 
@@ -88,7 +81,7 @@ export class AuthService {
 
   logout(): void {
     this.angularFireAuth.signOut().then(
-      (result) => {
+      () => {
         console.log('logout');
       }
     ).catch(error => {
@@ -96,12 +89,6 @@ export class AuthService {
       console.log(error);
     });
 
-  }
-
-
-
-  isAuth(): boolean {
-    return this.isAuthenticated;
   }
 
 }
