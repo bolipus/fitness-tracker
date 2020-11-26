@@ -1,10 +1,9 @@
-import { Subject, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 import { AuthData } from './auth-data.model';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { TrainingService } from '../training/training.service';
 import { UiService } from '../shared/ui.service';
 import { Store } from '@ngrx/store';
 import { AppState } from '../app.reducer';
@@ -21,7 +20,6 @@ export class AuthService {
   constructor(
     private router: Router,
     private angularFireAuth: AngularFireAuth,
-    private trainingService: TrainingService,
     private uiService: UiService,
     private store: Store<AppState>) { }
 
@@ -34,7 +32,6 @@ export class AuthService {
         this.store.dispatch(loginAction());
         this.router.navigate(['/training']);
       } else {
-        this.trainingService.cancelSubcriptions();
         this.store.dispatch(logoutAction());
         this.router.navigate(['/login']);
       }
@@ -51,7 +48,7 @@ export class AuthService {
     this.angularFireAuth.createUserWithEmailAndPassword(authData.email, authData.password).then(
       (result) => {
         console.log(result);
-        this.uiService.loadingStateChanged.next(false);
+        this.store.dispatch(stopLoading());
       }
     ).catch(error => {
       this.uiService.showSnackbar(error, undefined, 1000);

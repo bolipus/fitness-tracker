@@ -29,7 +29,8 @@ export const trainingReducer: ActionReducer<TrainingState, TypedAction<string>> 
   on(fetchFinishedTrainingsAction, (state: TrainingState, { excercises }) =>
     ({ ...state, finishedExcercises: excercises }) as TrainingState),
 
-  on(startTraining, (state: TrainingState, { excercise }) => ({ ...state, activeTraining: excercise }) as TrainingState),
+  on(startTraining, (state: TrainingState, { excerciseId }) =>
+    ({ ...state, activeTraining: { ...state.availableExcercies.find(ex => ex.id === excerciseId) } }) as TrainingState),
 
   on(stopTraining, (state: TrainingState) => ({ ...state, activeTraining: undefined }) as TrainingState)
 );
@@ -42,4 +43,4 @@ export const getTrainingState = createFeatureSelector<TrainingState>('training')
 export const getAvailableExcercises = createSelector(getTrainingState, (state: TrainingState) => state.availableExcercies);
 export const getFinishedExcercises = createSelector(getTrainingState, (state: TrainingState) => state.finishedExcercises);
 export const getActiveTraining = createSelector(getTrainingState, (state: TrainingState) => state.activeTraining);
-
+export const getIsTraining = createSelector(getTrainingState, (state: TrainingState) => state.activeTraining != null);

@@ -1,50 +1,41 @@
-import { Component, OnInit, EventEmitter, Output, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { TrainingService } from '../training.service';
 import { Excercise } from '../excercise.model';
-import { Observable, Subscription } from 'rxjs';
-import { UiService } from '../../shared/ui.service';
+import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { getAvailableExcercises } from '../training.reducer';
+import { getIsLoading } from '../../shared/ui.reducer';
+import { AppState } from '../../app.reducer';
+import { stopTraining } from '../training.actions';
 
 @Component({
   selector: 'app-new-training',
   templateUrl: './new-training.component.html',
   styleUrls: ['./new-training.component.css']
 })
-export class NewTrainingComponent implements OnInit, OnDestroy {
+export class NewTrainingComponent implements OnInit {
 
-  excercises: Excercise[] = [];
+  availableExcercises$: Observable<Excercise[]>;
 
   selectedExcerciseId: string | undefined;
 
-  excercisesSubcription: Subscription | null = null;
+  isLoading$: Observable<boolean>;
 
-  loadingSubcription: Subscription | null = null;
-
-  isLoading = true;
-
-  constructor(private trainingService: TrainingService, private uiService: UiService) {
-
+  constructor(private trainingService: TrainingService, private store: Store<AppState>) {
+    this.isLoading$ = this.store.select(getIsLoading);
+    this.availableExcercises$ = this.store.select(getAvailableExcercises);
   }
 
   ngOnInit(): void {
-    this.excercisesSubcription = this.trainingService.avalExcercisesChanged.subscribe((excercises: Excercise[]) => {
-      console.log('ExNew :' + excercises);
-      this.excercises = excercises;
-    });
-
-    this.loadingSubcription = this.uiService.loadingStateChanged.subscribe(
-      (isLoading) => this.isLoading = isLoading
-    );
-
-    this.trainingService.fetchAvailableExcercises();
+    this.fetchAvailableExcercies();
+    this.store.dispatch(stopTraining());
   }
 
-  ngOnDestroy(): void {
-    this.excercisesSubcription?.unsubscribe();
-    this.loadingSubcription?.unsubscribe();
-  }
 
   onStartTraining(): void {
-    this.trainingService.startExcercise(this.selectedExcerciseId);
+    if (this.selectedExcerciseId !== undefined) {
+      this.trainingService.startExcercise(this.selectedExcerciseId);
+    }
   }
 
   fetchAvailableExcercies(): void {

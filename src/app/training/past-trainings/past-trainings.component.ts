@@ -1,4 +1,3 @@
-import { Target } from '@angular/compiler';
 import { AfterViewInit, Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -6,6 +5,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Excercise } from '../excercise.model';
 import { TrainingService } from '../training.service';
 import { Subscription } from 'rxjs';
+import { TrainingState, getFinishedExcercises } from '../training.reducer';
+import { Store } from '@ngrx/store';
 
 
 
@@ -26,11 +27,14 @@ export class PastTrainingsComponent implements OnInit, AfterViewInit, OnDestroy 
 
   excercisesSubscription: Subscription | null = null;
 
-  constructor(trainingService: TrainingService) {
-    trainingService.excercisesChanged.subscribe((excercices: Excercise[]) => {
-      console.log(excercices);
-      this.dataSource.data = excercices;
-    })
+  constructor(trainingService: TrainingService, private store: Store<TrainingState>) {
+
+    this.store.select(getFinishedExcercises).subscribe(
+      (excercices: Excercise[]) => {
+        console.log(excercices);
+        this.dataSource.data = excercices;
+      }
+    );
 
     trainingService.fetchExcercises();
   }

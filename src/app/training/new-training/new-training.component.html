@@ -2,23 +2,24 @@
   <mat-card fxFlex.xs="100%" fxFlex="400px">
     <mat-card-title fxLayoutAlign="center">New excercise</mat-card-title>
     <mat-card-content fxLayoutAlign="center">
-      <mat-form-field appearance="fill" *ngIf="!isLoading && excercises">
+      <mat-form-field appearance="fill" *ngIf="!(isLoading$ | async) && (availableExcercises$ | async)">
         <mat-label>Favorite excercise</mat-label>
         <mat-select [(value)]="selectedExcerciseId">
-          <mat-option *ngFor="let excercise of excercises" [value]="excercise.id">
+          <mat-option *ngFor="let excercise of availableExcercises$ | async" [value]="excercise.id">
             {{excercise.name}}
           </mat-option>
         </mat-select>
-        <mat-spinner *ngIf="isLoading"></mat-spinner>
+        <mat-spinner *ngIf="isLoading$ | async"></mat-spinner>
       </mat-form-field>
 
     </mat-card-content>
-    <mat-card-actions fxLayoutAlign="center" *ngIf="!isLoading">
+    <mat-card-actions fxLayoutAlign="center" *ngIf="!(isLoading$ | async)">
       <button mat-raised-button color="primary" (click)="onStartTraining()"
-        [disabled]="selectedExcerciseId === undefined" *ngIf="excercises"> Start
+        [disabled]="selectedExcerciseId === undefined" *ngIf="availableExcercises$"> Start
       </button>
 
-      <button mat-raised-button color="primary" type="button" (click)="fetchAvailableExcercies()" *ngIf="!excercises">
+      <button mat-raised-button color="primary" type="button" (click)="fetchAvailableExcercies()"
+        *ngIf="!(availableExcercises$| async)">
         Fetch again
       </button>
     </mat-card-actions>
